@@ -1,0 +1,14 @@
+# Compiled binaries
+leaderboard
+leaderboard.exe
+Campus_Quest_Student_Starter
+*.o
+*.obj
+*.exe
+*.out
+
+# Editor / OS files
+.DS_Store
+*.swp
+.vscode/
+.idea/
