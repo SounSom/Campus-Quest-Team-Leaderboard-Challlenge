@@ -1,69 +1,56 @@
-# Campus Quest: Leaderboard - Fast-Track Team Guide (Due Tonight)
+# Team Roles
 
-**Course:** Algorithm Mini Project  
-**Project:** Campus Quest: Team Challenge Leaderboard  
-**Target Platforms:** Windows, Linux, and macOS (Cross-Platform)  
-**Timeline:** Fast-Track Sprint (Deadline: Tonight)  
-**GitHub Repo:** [Campus-Quest-Team-Leaderboard-Challlenge](https://github.com/SounSom/Campus-Quest-Team-Leaderboard-Challlenge.git)
+**Course:** Algorithm Mini Project
+**Project:** Campus Quest: Team Challenge Leaderboard
+**Repo:** https://github.com/SounSom/Campus-Quest-Team-Leaderboard-Challlenge.git
 
----
+## Who Does What
 
-## 1. Complete Team Roster & Role Assignments (5 Members)
-
-| Team Member | Position | Assigned Role | What You Code / Handle |
+| Member | Position | Role | What They Handle |
 | :--- | :--- | :--- | :--- |
-| **Tha Sotheara** *(Soun Som)* | Leader | **Integration Captain & Presenter** | Simple text menu loop (`main.cpp`), program coordination & cross-platform live demo |
-| **Thong Dyna** | Vice Lead | **Memory Guardian** | Dynamic array allocation, capacity doubling when full (`realloc`), memory cleanup (`freeLeaderboard`) |
-| **Hoeurn Puthirathanak** | Member | **Persistence Architect** | Cross-platform file I/O (`loadTeams`, `saveTeams`), handling both Windows `\r\n` and Linux/macOS `\n` line endings |
-| **Houth Lyheng** | Member | **Record Architect** | `Team` struct, finding team by ID (`findTeamIndex`), adding mission points (`recordMission`), deleting team (`deleteTeam`) |
-| **Chao Achharatepy** | Member | **Test Captain & Display** | Sorting leaderboard descending by score (`sortLeaderboard`), printing table (`showLeaderboard`), running T1–T11 tests |
+| Tha Sotheara (Soun Som) | Leader | Integration & Presenter | Menu loop in main.cpp, connecting everything together, live demo |
+| Thong Dyna | Vice Lead | Memory Management | Dynamic array (addTeam), freeing memory (freeMemory) |
+| Hoeurn Puthirathanak | Member | File I/O | Loading and saving teams (loadTeams, saveTeams) |
+| Houth Lyheng | Member | Team Operations | Team struct, finding by ID, adding points, deleting teams |
+| Chao Achharatepy | Member | Sorting & Display | Sorting leaderboard, printing table, testing |
 
----
+## How to Build
 
-## 2. Cross-Platform Compatibility Rules
-
-To ensure the project builds and runs identically on Windows, Linux, and macOS:
-
-1. **Standard C++ Only:** Use only portable standard libraries (`<iostream>`, `<cstring>`, `<cstdlib>`, `<cstdio>`, `<iomanip>`). Avoid OS-specific headers like `<windows.h>`, `<conio.h>`, or `<unistd.h>`.
-2. **Line Ending Safety (CRLF vs LF):** When reading `teams.txt` in `loadTeams`, trim both `\r` (Windows carriage return) and `\n` (Unix newline) from line ends.
-3. **Path Separators:** Use relative filenames (e.g. `"teams.txt"`) without hardcoded Windows backslashes `\` or Unix slashes `/`.
-
----
-
-## 3. Checkpoint Defense Cheat Sheet (Simple Answers)
-
-### 1. Tha Sotheara (Leader - Integration & Presenter)
-* **Assigned Code:** `main.cpp`, Menu Loop, Demo
-* **Presentation Answer:** "I built the cross-platform interactive menu in `main.cpp` that drives the program. It connects user choices to our memory and file functions, making sure invalid choices are handled cleanly on all operating systems."
-
-### 2. Thong Dyna (Vice Lead - Memory Guardian)
-* **Assigned Code:** Dynamic allocation in `leaderboard.cpp` (`addTeam`, `freeLeaderboard`)
-* **Presentation Answer:** "We start with capacity 0 and double it when the array is full. We use a temporary pointer with `realloc` so if allocation fails, our original data is preserved without causing memory leaks or crashes."
-
-### 3. Hoeurn Puthirathanak (Member - Persistence Architect)
-* **Assigned Code:** File I/O in `leaderboard.cpp` (`loadTeams`, `saveTeams`)
-* **Presentation Answer:** "I handle file persistence with pipe formatting (`id|name|score|missions`). When loading, our code strips both Windows `\r` and Unix `\n` line endings so files created on Windows work seamlessly on Linux or macOS."
-
-### 4. Houth Lyheng (Member - Record Architect)
-* **Assigned Code:** Struct & operations in `leaderboard.cpp` (`findTeamIndex`, `recordMission`, `deleteTeam`)
-* **Presentation Answer:** "Each team is stored as a complete `Team` struct. When deleting a team, we shift complete struct records left to keep ID, name, score, and missions together as one atomic unit."
-
-### 5. Chao Achharatepy (Member - Test Captain & Display)
-* **Assigned Code:** `sortLeaderboard`, `showLeaderboard`, Test Verification
-* **Presentation Answer:** "We sort descending by score and use missions as a tie-breaker. We tested boundary cases including empty lists, duplicate IDs, invalid points (0 or 101), and file reload persistence."
-
----
-
-## 4. How to Build & Run on Any OS
-
-### On Linux and macOS:
+### Linux / macOS:
 ```bash
 g++ -Wall -Wextra -std=c++11 main.cpp leaderboard.cpp -o leaderboard
 ./leaderboard
 ```
 
-### On Windows (Command Prompt / PowerShell / MinGW / Git Bash):
+### Windows:
 ```cmd
 g++ -Wall -Wextra -std=c++11 main.cpp leaderboard.cpp -o leaderboard.exe
 leaderboard.exe
 ```
+
+## What Each Person Should Know for Presentation
+
+### Tha Sotheara (Leader)
+- **Your file:** main.cpp
+- **What you did:** Built the menu loop that takes user input and calls the right functions
+- **If asked:** "The main loop shows a menu, reads input, and calls functions in leaderboard.cpp based on what the user picks. It also saves data when you exit."
+
+### Thong Dyna (Vice Lead)
+- **Your file:** leaderboard.cpp (addTeam and freeMemory)
+- **What you did:** Made the array grow when it's full, and clean up memory when done
+- **If asked:** "We start with no space. When we add a team and the array is full, we double the size using realloc. We use a temp pointer so if it fails, we don't lose our data."
+
+### Hoeurn Puthirathanak
+- **Your file:** leaderboard.cpp (loadTeams and saveTeams)
+- **What you did:** Reading and writing teams from/to teams.txt
+- **If asked:** "We save teams as id|name|score|missions, one per line. When loading, we split each line by the | character. We also handle both Windows and Linux line endings."
+
+### Houth Lyheng
+- **Your file:** leaderboard.h and leaderboard.cpp (findTeamIndex, recordMission, deleteTeam)
+- **What you did:** The Team struct and operations on it
+- **If asked:** "Each team is a struct with id, name, score, and missions. To delete, we shift everything after it one spot left. To find a team, we loop through and check the ID."
+
+### Chao Achharatepy
+- **Your file:** leaderboard.cpp (sortLeaderboard, showLeaderboard)
+- **What you did:** Sorting and displaying the teams
+- **If asked:** "We use bubble sort to put the highest score first. If two teams have the same score, the one with more missions goes higher."

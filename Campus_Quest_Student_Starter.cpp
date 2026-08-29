@@ -6,62 +6,60 @@
 #define NAME_LEN 40
 #define LINE_LEN 160
 
-typedef struct {
+struct Team {
     int id;
     char name[NAME_LEN];
     int score;
     int missions;
-} Team;
+};
 
-int findTeamIndex(const Team teams[], int size, int id);
-int ensureCapacity(Team **teams, int *capacity, int required);
-int addTeam(Team **teams, int *size, int *capacity, Team candidate);
+int findTeamIndex(Team teams[], int size, int id);
+int addTeam(Team* &teams, int &size, int &capacity, Team newTeam);
 int recordMission(Team teams[], int size, int id, int points);
-int deleteTeam(Team teams[], int *size, int id);
+int deleteTeam(Team teams[], int &size, int id);
 void sortLeaderboard(Team teams[], int size);
-void displayTeams(const Team teams[], int size);
-int loadTeams(const char *filename, Team **teams, int *size, int *capacity);
-int saveTeams(const char *filename, const Team teams[], int size);
-void readText(const char *prompt, char text[], int limit);
-int readInt(const char *prompt, int *value);
+void displayTeams(Team teams[], int size);
+int loadTeams(const char* filename, Team* &teams, int &size, int &capacity);
+int saveTeams(const char* filename, Team teams[], int size);
+void readText(const char* prompt, char text[], int limit);
+bool readInt(const char* prompt, int &value);
 
-int main(void)
-{
-    Team *teams = nullptr;
+int main() {
+    Team* teams = NULL;
     int size = 0;
     int capacity = 0;
     int choice;
 
-    loadTeams("teams.txt", &teams, &size, &capacity);
+    loadTeams("teams.txt", teams, size, capacity);
 
     do {
         std::cout << "\n=== CAMPUS QUEST LEADERBOARD ===\n"
                   << "1. Register a team\n2. Record mission points\n3. Find a team\n"
                   << "4. Remove a team\n5. Show leaderboard\n6. Save and exit\n";
 
-        if (!readInt("Choose: ", &choice)) {
-            std::cout << "Invalid menu input.\n";
+        if (!readInt("Choose: ", choice)) {
+            std::cout << "Invalid input.\n";
             continue;
         }
 
         if (choice == 1) {
-            Team candidate = {0, "", 0, 0};
-            readInt("Team ID: ", &candidate.id);
-            readText("Team name: ", candidate.name, NAME_LEN);
-            /* TODO: call addTeam and report success/failure */
+            Team t = {0, "", 0, 0};
+            readInt("Team ID: ", t.id);
+            readText("Team name: ", t.name, NAME_LEN);
+            /* TODO: call addTeam and tell the user if it worked */
         } else if (choice == 2) {
             int id, points;
-            readInt("Team ID: ", &id);
-            readInt("Mission points (1-100): ", &points);
-            /* TODO: call recordMission and report success/failure */
+            readInt("Team ID: ", id);
+            readInt("Mission points (1-100): ", points);
+            /* TODO: call recordMission and tell the user if it worked */
         } else if (choice == 3) {
             int id;
-            readInt("Team ID: ", &id);
-            /* TODO: search and display the matching complete record */
+            readInt("Team ID: ", id);
+            /* TODO: find the team and print its info */
         } else if (choice == 4) {
             int id;
-            readInt("Team ID: ", &id);
-            /* TODO: call deleteTeam and report success/failure */
+            readInt("Team ID: ", id);
+            /* TODO: call deleteTeam and tell the user if it worked */
         } else if (choice == 5) {
             sortLeaderboard(teams, size);
             displayTeams(teams, size);
@@ -69,87 +67,100 @@ int main(void)
             if (!saveTeams("teams.txt", teams, size))
                 std::cout << "Warning: data could not be saved.\n";
         } else {
-            std::cout << "Choose a number from 1 to 6.\n";
+            std::cout << "Pick a number from 1 to 6.\n";
         }
     } while (choice != 6);
 
-    std::free(teams);
-    teams = nullptr;
+    free(teams);
+    teams = NULL;
     return 0;
 }
 
-int findTeamIndex(const Team teams[], int size, int id)
-{
+// Find a team by ID. Returns the index, or -1 if not found.
+int findTeamIndex(Team teams[], int size, int id) {
+    /* TODO: loop through teams[0] to teams[size-1] and return the matching index */
     (void)teams; (void)size; (void)id;
-    /* TODO: search only indexes 0 through size - 1 */
     return -1;
 }
 
-int ensureCapacity(Team **teams, int *capacity, int required)
-{
-    (void)teams; (void)capacity; (void)required;
-    /* TODO: grow by doubling; use a temporary pointer with realloc */
+// Make the array bigger if needed
+int ensureCapacity(Team* &teams, int &capacity, int needed) {
+    /* TODO: if needed > capacity, double the capacity using realloc */
+    (void)teams; (void)capacity; (void)needed;
     return 0;
 }
 
-int addTeam(Team **teams, int *size, int *capacity, Team candidate)
-{
-    (void)teams; (void)size; (void)capacity; (void)candidate;
-    /* TODO: validate, reject duplicate ID, ensure capacity, then commit */
+// Add a team. Check for duplicate ID first.
+int addTeam(Team* &teams, int &size, int &capacity, Team newTeam) {
+    /* TODO: check ID is unique, make sure there's room, then add */
+    (void)teams; (void)size; (void)capacity; (void)newTeam;
     return 0;
 }
 
-int recordMission(Team teams[], int size, int id, int points)
-{
+// Add mission points (1-100) to a team
+int recordMission(Team teams[], int size, int id, int points) {
+    /* TODO: check points are 1-100, find the team, add to score and missions */
     (void)teams; (void)size; (void)id; (void)points;
-    /* TODO: validate points, find by ID, then update score and missions */
     return 0;
 }
 
-int deleteTeam(Team teams[], int *size, int id)
-{
+// Remove a team by shifting the rest left
+int deleteTeam(Team teams[], int &size, int id) {
+    /* TODO: find the team, shift everything after it left, decrease size */
     (void)teams; (void)size; (void)id;
-    /* TODO: find by ID, shift complete Team records left, reduce size */
     return 0;
 }
 
-void sortLeaderboard(Team teams[], int size)
-{
+// Sort teams by score (highest first)
+void sortLeaderboard(Team teams[], int size) {
+    /* TODO: bubble sort, highest score first. If scores are equal, more missions wins */
     (void)teams; (void)size;
-    /* TODO: descending score; swap complete Team objects */
 }
 
-void displayTeams(const Team teams[], int size)
-{
+// Print all teams in a table
+void displayTeams(Team teams[], int size) {
+    /* TODO: print each team's rank, id, name, score, missions */
     (void)teams; (void)size;
-    /* TODO: print a readable table without inspecting unused capacity */
 }
 
-int loadTeams(const char *filename, Team **teams, int *size, int *capacity)
-{
+// Load teams from a file
+int loadTeams(const char* filename, Team* &teams, int &size, int &capacity) {
+    /* TODO: open file, read each line, parse id|name|score|missions, add team */
     (void)filename; (void)teams; (void)size; (void)capacity;
-    /* TODO: open; read one line; parse temporary fields; validate; commit */
     return 0;
 }
 
-int saveTeams(const char *filename, const Team teams[], int size)
-{
+// Save teams to a file
+int saveTeams(const char* filename, Team teams[], int size) {
+    /* TODO: write each team as id|name|score|missions on its own line */
     (void)filename; (void)teams; (void)size;
-    /* TODO: write id|name|score|missions and report write/close failure */
     return 0;
 }
 
-void readText(const char *prompt, char text[], int limit)
-{
+// Read a line of text from the user
+void readText(const char* prompt, char text[], int limit) {
     std::cout << prompt;
     if (fgets(text, limit, stdin) != NULL)
-        text[std::strcspn(text, "\n")] = '\0';
+        text[strcspn(text, "\n")] = '\0';
 }
 
-int readInt(const char *prompt, int *value)
-{
-    char line[LINE_LEN], extra;
+// Read a whole number from the user. Returns true if valid.
+bool readInt(const char* prompt, int &value) {
+    char line[LINE_LEN];
     std::cout << prompt;
-    if (fgets(line, sizeof line, stdin) == NULL) return 0;
-    return sscanf(line, "%d %c", value, &extra) == 1;
+    if (fgets(line, sizeof(line), stdin) == NULL) return false;
+
+    line[strcspn(line, "\n")] = '\0';
+    if (line[0] == '\0') return false;
+
+    int start = 0;
+    if (line[0] == '-') start = 1;
+    if (line[start] == '\0') return false;
+
+    for (int i = start; line[i] != '\0'; i++) {
+        if (line[i] < '0' || line[i] > '9') return false;
+    }
+
+    value = atoi(line);
+    return true;
 }

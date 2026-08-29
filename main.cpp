@@ -1,13 +1,45 @@
 #include "leaderboard.h"
 #include <iostream>
-#include <limits>
 #include <cstring>
+#include <cstdio>
+#include <cstdlib>
 
 const char* DATA_FILE = "teams.txt";
 
-void clearInputBuffer() {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+// Read an integer from the user. Returns true if valid, false if not.
+// This rejects floats, letters, and empty input.
+bool readInt(const char* prompt, int &result) {
+    char line[100];
+    std::cout << prompt;
+    if (!fgets(line, sizeof(line), stdin)) return false;
+
+    // Remove the newline
+    line[strcspn(line, "\n")] = '\0';
+
+    // Check that the line is not empty
+    if (line[0] == '\0') return false;
+
+    // Check every character is a digit (or a leading minus sign)
+    int start = 0;
+    if (line[0] == '-') start = 1;
+    if (line[start] == '\0') return false;
+
+    for (int i = start; line[i] != '\0'; i++) {
+        if (line[i] < '0' || line[i] > '9') {
+            return false;
+        }
+    }
+
+    result = atoi(line);
+    return true;
+}
+
+// Read a line of text from the user
+void readText(const char* prompt, char text[], int maxLen) {
+    std::cout << prompt;
+    if (fgets(text, maxLen, stdin) != NULL) {
+        text[strcspn(text, "\n")] = '\0';
+    }
 }
 
 int main() {
@@ -15,10 +47,10 @@ int main() {
     int size = 0;
     int capacity = 0;
 
-    // Automatically load existing records on startup
-    int loaded = loadTeams(DATA_FILE, &teams, &size, &capacity);
+    // Load saved teams on startup
+    int loaded = loadTeams(DATA_FILE, teams, size, capacity);
     if (loaded > 0) {
-        std::cout << "[Startup] Loaded " << loaded << " team(s) from " << DATA_FILE << ".\n";
+        std::cout << "Loaded " << loaded << " team(s) from " << DATA_FILE << ".\n";
     }
 
     int choice = 0;
@@ -34,142 +66,106 @@ int main() {
         std::cout << " 6. Save Leaderboard to File\n";
         std::cout << " 7. Exit Program\n";
         std::cout << "-----------------------------------------\n";
-        std::cout << "Enter your choice (1-7): ";
 
-        if (!(std::cin >> choice)) {
-            std::cout << "[Error] Invalid input. Please enter a number from 1 to 7.\n";
-            clearInputBuffer();
+        if (!readInt("Enter your choice (1-7): ", choice)) {
+            std::cout << "Error: Please enter a number from 1 to 7.\n";
             continue;
         }
 
-        switch (choice) {
-            case 1: {
-                Team newTeam;
-                std::cout << "Enter Team ID (positive integer): ";
-                if (!(std::cin >> newTeam.id) || newTeam.id <= 0) {
-                    std::cout << "[Error] ID must be a positive integer.\n";
-                    clearInputBuffer();
-                    break;
-                }
-                clearInputBuffer();
+        if (choice == 1) {
+            Team t;
 
-                std::cout << "Enter Team Name (max 39 characters): ";
-                std::cin.getline(newTeam.name, sizeof(newTeam.name));
-                if (strlen(newTeam.name) == 0) {
-                    std::cout << "[Error] Team name cannot be empty.\n";
-                    break;
-                }
-
-                std::cout << "Enter Initial Score (non-negative): ";
-                if (!(std::cin >> newTeam.score) || newTeam.score < 0) {
-                    std::cout << "[Error] Score must be non-negative.\n";
-                    clearInputBuffer();
-                    break;
-                }
-
-                std::cout << "Enter Completed Missions (non-negative): ";
-                if (!(std::cin >> newTeam.missions) || newTeam.missions < 0) {
-                    std::cout << "[Error] Completed missions must be non-negative.\n";
-                    clearInputBuffer();
-                    break;
-                }
-                clearInputBuffer();
-
-                if (addTeam(&teams, &size, &capacity, newTeam)) {
-                    std::cout << "[Success] Team '" << newTeam.name << "' registered successfully.\n";
-                }
-                break;
+            if (!readInt("Enter Team ID (positive number): ", t.id) || t.id <= 0) {
+                std::cout << "Error: ID must be a positive whole number.\n";
+                continue;
             }
 
-            case 2: {
-                int id, points;
-                std::cout << "Enter Team ID: ";
-                if (!(std::cin >> id)) {
-                    std::cout << "[Error] Invalid ID input.\n";
-                    clearInputBuffer();
-                    break;
-                }
-                std::cout << "Enter Mission Points (1 to 100): ";
-                if (!(std::cin >> points)) {
-                    std::cout << "[Error] Invalid points input.\n";
-                    clearInputBuffer();
-                    break;
-                }
-                clearInputBuffer();
-
-                if (recordMission(teams, size, id, points)) {
-                    std::cout << "[Success] Recorded " << points << " points for team ID " << id << ".\n";
-                }
-                break;
+            readText("Enter Team Name: ", t.name, sizeof(t.name));
+            if (strlen(t.name) == 0) {
+                std::cout << "Error: Team name cannot be empty.\n";
+                continue;
             }
 
-            case 3: {
-                int id;
-                std::cout << "Enter Team ID to search: ";
-                if (!(std::cin >> id)) {
-                    std::cout << "[Error] Invalid ID input.\n";
-                    clearInputBuffer();
-                    break;
-                }
-                clearInputBuffer();
-
-                int idx = findTeamIndex(teams, size, id);
-                if (idx != -1) {
-                    std::cout << "\n[Team Found]\n";
-                    std::cout << "  ID:       " << teams[idx].id << "\n";
-                    std::cout << "  Name:     " << teams[idx].name << "\n";
-                    std::cout << "  Score:    " << teams[idx].score << "\n";
-                    std::cout << "  Missions: " << teams[idx].missions << "\n";
-                } else {
-                    std::cout << "[Info] Team with ID " << id << " was not found.\n";
-                }
-                break;
+            if (!readInt("Enter Initial Score (0 or more): ", t.score) || t.score < 0) {
+                std::cout << "Error: Score must be 0 or more.\n";
+                continue;
             }
 
-            case 4: {
-                int id;
-                std::cout << "Enter Team ID to remove: ";
-                if (!(std::cin >> id)) {
-                    std::cout << "[Error] Invalid ID input.\n";
-                    clearInputBuffer();
-                    break;
-                }
-                clearInputBuffer();
-
-                if (deleteTeam(teams, &size, id)) {
-                    std::cout << "[Success] Team ID " << id << " removed.\n";
-                }
-                break;
+            if (!readInt("Enter Completed Missions (0 or more): ", t.missions) || t.missions < 0) {
+                std::cout << "Error: Missions must be 0 or more.\n";
+                continue;
             }
 
-            case 5: {
-                sortLeaderboard(teams, size);
-                showLeaderboard(teams, size);
-                break;
+            if (addTeam(teams, size, capacity, t)) {
+                std::cout << "Team '" << t.name << "' registered!\n";
             }
 
-            case 6: {
-                if (saveTeams(DATA_FILE, teams, size)) {
-                    std::cout << "[Success] Saved " << size << " team(s) to " << DATA_FILE << ".\n";
-                }
-                break;
+        } else if (choice == 2) {
+            int id, points;
+
+            if (!readInt("Enter Team ID: ", id)) {
+                std::cout << "Error: Please enter a valid number.\n";
+                continue;
             }
 
-            case 7: {
-                // Save before exit
-                saveTeams(DATA_FILE, teams, size);
-                std::cout << "[Exit] Saved data and cleaning up memory...\n";
-                break;
+            if (!readInt("Enter Mission Points (1 to 100): ", points)) {
+                std::cout << "Error: Please enter a valid number.\n";
+                continue;
             }
 
-            default:
-                std::cout << "[Error] Please choose a valid option (1-7).\n";
-                break;
+            if (recordMission(teams, size, id, points)) {
+                std::cout << "Recorded " << points << " points for team ID " << id << ".\n";
+            }
+
+        } else if (choice == 3) {
+            int id;
+
+            if (!readInt("Enter Team ID to search: ", id)) {
+                std::cout << "Error: Please enter a valid number.\n";
+                continue;
+            }
+
+            int index = findTeamIndex(teams, size, id);
+            if (index != -1) {
+                std::cout << "\nTeam Found:\n";
+                std::cout << "  ID:       " << teams[index].id << "\n";
+                std::cout << "  Name:     " << teams[index].name << "\n";
+                std::cout << "  Score:    " << teams[index].score << "\n";
+                std::cout << "  Missions: " << teams[index].missions << "\n";
+            } else {
+                std::cout << "Team with ID " << id << " was not found.\n";
+            }
+
+        } else if (choice == 4) {
+            int id;
+
+            if (!readInt("Enter Team ID to remove: ", id)) {
+                std::cout << "Error: Please enter a valid number.\n";
+                continue;
+            }
+
+            if (deleteTeam(teams, size, id)) {
+                std::cout << "Team ID " << id << " removed.\n";
+            }
+
+        } else if (choice == 5) {
+            sortLeaderboard(teams, size);
+            showLeaderboard(teams, size);
+
+        } else if (choice == 6) {
+            if (saveTeams(DATA_FILE, teams, size)) {
+                std::cout << "Saved " << size << " team(s) to " << DATA_FILE << ".\n";
+            }
+
+        } else if (choice == 7) {
+            saveTeams(DATA_FILE, teams, size);
+            std::cout << "Data saved. Goodbye!\n";
+
+        } else {
+            std::cout << "Error: Please choose a number from 1 to 7.\n";
         }
     }
 
-    // Safe memory cleanup
-    freeLeaderboard(&teams, &size, &capacity);
-    std::cout << "Goodbye!\n";
+    freeMemory(teams, size, capacity);
     return 0;
 }
