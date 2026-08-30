@@ -7,7 +7,7 @@
 
 using namespace std;
 
-// Look for a team by ID. Returns the index number, or -1 if not found
+// Look for a team by ID. Returns the index number, or -1 if not found.
 int findTeamIndex(Team teams[], int size, int id) {
     // Skim through records to look for a match
     for (int i = 0; i < size; i++) {
