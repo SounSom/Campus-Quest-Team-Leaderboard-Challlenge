@@ -1,6 +1,7 @@
 #ifndef LEADERBOARD_H
 #define LEADERBOARD_H
 
+// Team structure holding basic info for each team
 struct Team {
     int id;
     char name[40];
@@ -8,6 +9,7 @@ struct Team {
     int missions;
 };
 
+// Function prototypes
 int findTeamIndex(Team teams[], int size, int id);
 int addTeam(Team* &teams, int &size, int &capacity, Team newTeam);
 int recordMission(Team teams[], int size, int id, int points);
