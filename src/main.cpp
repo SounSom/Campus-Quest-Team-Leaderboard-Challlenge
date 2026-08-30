@@ -6,6 +6,8 @@
 
 using namespace std;
 
+// Tha Sothera, Thong Dyna, Houth Lyheng, Hoeurn Puthirathank, Chao Acharatepy
+
 // Variable holding the file name
 const char* DATA_FILE = "teams.txt";
 
