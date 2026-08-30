@@ -1,14 +1,27 @@
-CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++11
+# Name of your final executable
 TARGET = leaderboard
-SRCS = main.cpp leaderboard.cpp
 
+# Find all C files in the folder
+SRCS = $(wildcard src/*.cpp)
+
+# Detect which compiler is available
+ifeq (, $(shell command -v g++ 2> /dev/null))
+    ifeq (, $(shell command -v clang++ 2> /dev/null))
+        $(error "no C compiler found")
+    else
+        CC = clang++
+    endif
+else
+    CC = g++
+endif
+
+# Default when you enter "make"
 all: $(TARGET)
 
+# Compile all C files together
 $(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAGS) $(SRCS) -o $(TARGET)
+	$(CC) -Wall $(SRCS) -o $(TARGET)
 
+# Clean up rule | 'make clean'
 clean:
-	rm -f $(TARGET) $(TARGET).exe *.o
-
-.PHONY: all clean
+	rm -f $(TARGET)
