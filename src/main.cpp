@@ -6,11 +6,14 @@
 
 using namespace std;
 
+// Variable holding the file name
 const char* DATA_FILE = "teams.txt";
 
 // Helper function to read a text line safely
 void readText(const char* prompt, char text[], int limit) {
+    // Inform the user what to input
     cout << prompt;
+    // IF the user input successfully THEN trim \n away
     if (fgets(text, limit, stdin) != NULL) {
         text[strcspn(text, "\n")] = '\0';
     }
@@ -18,27 +21,29 @@ void readText(const char* prompt, char text[], int limit) {
 
 // Helper function to read an integer and reject letters, floats, or empty input
 bool readInt(const char* prompt, int &result) {
+    // Temporary input buffer
     char line[100];
+
+    // Inform the user what to input
     cout << prompt;
+    // IF the input failed
     if (fgets(line, sizeof(line), stdin) == NULL) return false;
 
-    // Strip newline
+    // Strip trailing line break
     line[strcspn(line, "\n")] = '\0';
-
-    // Reject empty input
     if (line[0] == '\0') return false;
 
-    // Check every character is a digit
+    // Skip minus sign if present
     int start = 0;
     if (line[0] == '-') start = 1;
     if (line[start] == '\0') return false;
 
+    // Check each character to ensure it's a digit
     for (int i = start; line[i] != '\0'; i++) {
-        if (line[i] < '0' || line[i] > '9') {
-            return false;
-        }
+        if (line[i] < '0' || line[i] > '9') return false;
     }
 
+    // Convert string to integer
     result = atoi(line);
     return true;
 }
@@ -47,132 +52,106 @@ int main() {
     Team* teams = NULL;
     int size = 0;
     int capacity = 0;
-    int choice = 0;
+    int choice;
 
-    // Load saved data on startup
+    // Load existing team records on program startup
     int loaded = loadTeams(DATA_FILE, teams, size, capacity);
     if (loaded > 0) {
         cout << "Loaded " << loaded << " team(s) from " << DATA_FILE << ".\n";
     }
 
-    while (choice != 7) {
-        cout << "\n=========================================\n";
-        cout << "      CAMPUS QUEST: LEADERBOARD          \n";
-        cout << "=========================================\n";
-        cout << " 1. Register New Team                    \n";
-        cout << " 2. Record Mission Points                \n";
-        cout << " 3. Find Team by ID                      \n";
-        cout << " 4. Remove Team                          \n";
-        cout << " 5. Show Ranked Leaderboard              \n";
-        cout << " 6. Save Leaderboard to File             \n";
-        cout << " 7. Exit Program                         \n";
-        cout << "-----------------------------------------\n";
+    do {
+        cout << "\n=========================================\n"
+             << "      CAMPUS QUEST: LEADERBOARD          \n"
+             << "=========================================\n"
+             << " 1. Register New Team                    \n"
+             << " 2. Record Mission Points                \n"
+             << " 3. Find Team by ID                      \n"
+             << " 4. Remove Team                          \n"
+             << " 5. Show Ranked Leaderboard              \n"
+             << " 6. Save Leaderboard to File             \n"
+             << " 7. Exit Program                         \n"
+             << "-----------------------------------------\n";
 
         if (!readInt("Enter your choice (1-7): ", choice)) {
             cout << "Error: Please enter a number from 1 to 7.\n";
             continue;
         }
 
-        // Option 1: Register New Team
         if (choice == 1) {
-            Team t;
-            t.score = 0;
-            t.missions = 0;
-
-            if (!readInt("Enter Team ID (positive number): ", t.id) || t.id <= 0) {
-                cout << "Error: ID must be a positive whole number.\n";
+            Team newTeam = {0, "", 0, 0};
+            if (!readInt("Enter Team ID: ", newTeam.id)) {
+                cout << "Error: Invalid ID. ID must be a whole number.\n";
                 continue;
             }
-
-            readText("Enter Team Name: ", t.name, sizeof(t.name));
-            if (strlen(t.name) == 0) {
+            readText("Enter Team Name: ", newTeam.name, sizeof(newTeam.name));
+            if (strlen(newTeam.name) == 0) {
                 cout << "Error: Team name cannot be empty.\n";
                 continue;
             }
+            addTeam(teams, size, capacity, newTeam);
 
-            if (!readInt("Enter Initial Score: ", t.score) || t.score < 0) {
-                cout << "Error: Score must be 0 or more.\n";
-                continue;
-            }
-
-            if (!readInt("Enter Initial Missions: ", t.missions) || t.missions < 0) {
-                cout << "Error: Missions must be 0 or more.\n";
-                continue;
-            }
-
-            if (addTeam(teams, size, capacity, t)) {
-                cout << "Team \"" << t.name << "\" added successfully!\n";
-            }
-
-        // Option 2: Record Mission Points
         } else if (choice == 2) {
             int id, points;
             if (!readInt("Enter Team ID: ", id)) {
-                cout << "Error: Please enter a valid number.\n";
+                cout << "Error: Invalid ID.\n";
                 continue;
             }
-
             if (!readInt("Enter Mission Points (1-100): ", points)) {
-                cout << "Error: Please enter a valid number.\n";
+                cout << "Error: Points must be a number.\n";
                 continue;
             }
+            recordMission(teams, size, id, points);
 
-            if (recordMission(teams, size, id, points)) {
-                cout << "Added " << points << " points to Team " << id << "!\n";
-            }
-
-        // Option 3: Find Team by ID
         } else if (choice == 3) {
             int id;
-            if (!readInt("Enter Team ID to find: ", id)) {
-                cout << "Error: Please enter a valid number.\n";
+            if (!readInt("Enter Team ID to search: ", id)) {
+                cout << "Error: Invalid ID.\n";
                 continue;
             }
-
-            int index = findTeamIndex(teams, size, id);
-            if (index == -1) {
-                cout << "Team ID " << id << " was not found.\n";
+            int idx = findTeamIndex(teams, size, id);
+            if (idx != -1) {
+                cout << "\n--- Team Details ---\n"
+                     << "ID:       " << teams[idx].id << "\n"
+                     << "Name:     " << teams[idx].name << "\n"
+                     << "Score:    " << teams[idx].score << "\n"
+                     << "Missions: " << teams[idx].missions << "\n";
             } else {
-                cout << "\n--- Team Found ---\n";
-                cout << "ID:       " << teams[index].id << "\n";
-                cout << "Name:     " << teams[index].name << "\n";
-                cout << "Score:    " << teams[index].score << "\n";
-                cout << "Missions: " << teams[index].missions << "\n";
+                cout << "Error: Team with ID " << id << " not found.\n";
             }
 
-        // Option 4: Remove Team
         } else if (choice == 4) {
             int id;
             if (!readInt("Enter Team ID to remove: ", id)) {
-                cout << "Error: Please enter a valid number.\n";
+                cout << "Error: Invalid ID.\n";
                 continue;
             }
+            deleteTeam(teams, size, id);
 
-            if (deleteTeam(teams, size, id)) {
-                cout << "Team " << id << " removed successfully.\n";
-            }
-
-        // Option 5: Show Ranked Leaderboard
         } else if (choice == 5) {
             sortLeaderboard(teams, size);
             showLeaderboard(teams, size);
 
-        // Option 6: Save Leaderboard to File
         } else if (choice == 6) {
             if (saveTeams(DATA_FILE, teams, size)) {
                 cout << "Saved " << size << " team(s) to " << DATA_FILE << ".\n";
+            } else {
+                cout << "Error: Failed to save data.\n";
             }
 
-        // Option 7: Exit Program
         } else if (choice == 7) {
-            saveTeams(DATA_FILE, teams, size);
-            cout << "Data saved. Goodbye!\n";
+            if (saveTeams(DATA_FILE, teams, size)) {
+                cout << "Saved " << size << " team(s) to " << DATA_FILE << ".\n";
+            }
+            cout << "Exiting Campus Quest Leaderboard. Goodbye!\n";
 
         } else {
-            cout << "Error: Please choose a number from 1 to 7.\n";
+            cout << "Error: Please pick a choice between 1 and 7.\n";
         }
-    }
 
+    } while (choice != 7);
+
+    // Clean up heap memory before exiting
     freeMemory(teams, size, capacity);
     return 0;
 }
