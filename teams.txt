@@ -1,4 +1,3 @@
-3|HeavenlyDivineSwordImmortalSect|999999|7777
 9|Som's Chicken Farm|236|24
 103|Logic Legends|150|3
 101|Byte Bandits|120|2

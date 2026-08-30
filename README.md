@@ -3,7 +3,7 @@
 [![Language](https://img.shields.io/badge/Language-C%2B%2B11-blue.svg)](https://en.cppreference.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)]()
 [![Build](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
-[![License](https://img.shields.io/badge/License-MIT-orange.svg)]()
+[![License](https://img.shields.io/badge/License-MIT-orange.svg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 > A robust, cross-platform C++ console application designed to manage, rank, and persist team competition records dynamically and safely.
 
@@ -143,4 +143,4 @@ Enter your choice (1-7):
 
 ## 📜 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the [MIT License](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
