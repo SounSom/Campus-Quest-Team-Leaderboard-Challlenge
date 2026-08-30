@@ -29,11 +29,18 @@
 
 ```
 Campus-Quest-Team-Leaderboard-Challlenge/
-├── leaderboard.h      # Data model (Team struct) and shared function prototypes
-├── leaderboard.cpp    # Dynamic memory, record operations, file I/O & sort logic
-├── main.cpp           # Interactive 7-option console menu loop
-├── teams.txt          # Pipe-delimited data file (id|name|score|missions)
-└── Makefile           # Cross-platform 1-command build script
+├── Documentations/      # Project documentation and team guides
+│   ├── GETTING_STARTED.md
+│   ├── MEMBER_GUIDE.md
+│   ├── TEAM_ROLES.md
+│   └── mini project.md
+├── src/                # C++ Source files
+│   ├── leaderboard.h   # Data model (Team struct) and shared function prototypes
+│   ├── leaderboard.cpp # Dynamic memory, record operations, file I/O & sort logic
+│   └── main.cpp        # Interactive 7-option console menu loop
+├── teams.txt           # Pipe-delimited data file (id|name|score|missions)
+├── Makefile            # Cross-platform 1-command build script
+└── README.md           # Master project overview & guide
 ```
 
 ---
@@ -77,7 +84,7 @@ make
 #### 🪟 Windows (Command Prompt / PowerShell / Git Bash)
 ```cmd
 # Compile with g++
-g++ -Wall -Wextra -std=c++11 main.cpp leaderboard.cpp -o leaderboard.exe
+g++ -Wall -Wextra -std=c++11 src/main.cpp src/leaderboard.cpp -o leaderboard.exe
 
 # Run application
 leaderboard.exe
