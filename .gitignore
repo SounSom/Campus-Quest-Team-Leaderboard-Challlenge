@@ -6,6 +6,7 @@ Campus_Quest_Student_Starter
 *.obj
 *.exe
 *.out
+*.txt
 
 # Editor / OS files
 .DS_Store
